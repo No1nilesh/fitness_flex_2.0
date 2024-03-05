@@ -13,7 +13,13 @@ const router = useRouter()
 
 useEffect(() => {
   if(sessionStatus === "authenticated"){
-    router.replace("/member")
+    if(session?.user.role == "admin"){
+      router.replace("/admin/dashboard")
+    }else if(session?.user.role == "trainer"){
+      router.replace("/trainer/dashboard")
+    }else{
+      router.replace("/member")
+    }
   }
 }, [sessionStatus , router])
 
@@ -58,7 +64,7 @@ const handleChange=(e)=>{
                 setSubmitting(false);
                 const form = e.target;
                 form.reset();
-                router.replace("/login")
+                router.replace("/address")
                 console.log("user registered");
               }else{
                 const errorData = await res.json();

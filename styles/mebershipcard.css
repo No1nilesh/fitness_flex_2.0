@@ -1,76 +1,35 @@
 .card {
-    margin-left: -1rem;
-    margin-right: -1rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: stretch;
-    margin-bottom: 2rem;
-    width: 320px;
-    display: flex;
-    flex-direction: column;
-    border-radius: 0.25rem;
-    background-color: rgba(17, 24, 39, 1);
-    padding: 1.5rem;
-  }
+  @apply -ml-4 -mr-4 flex flex-wrap items-stretch mb-8 w-80 flex-col rounded bg-gray-400 dark:bg-[rgba(17,24,39,1)] p-6 }
   
   .header {
-    display: flex;
-    flex-direction: column;
+    @apply flex flex-col
   }
   
   .title {
-    font-size: 1.5rem;
-    line-height: 2rem;
-    font-weight: 700;
-    color: #fff
+    @apply text-xl font-bold text-white
   }
   
   .price {
-    font-size: 3.75rem;
-    line-height: 1;
-    font-weight: 700;
-    color: #fff
+    @apply text-6xl font-bold text-white
   }
   
   .desc {
-    margin-top: 0.75rem;
-    margin-bottom: 0.75rem;
-    line-height: 1.625;
-    color: rgba(156, 163, 175, 1);
+    @apply my-3  leading-7 text-[rgba(156,163,175,1)]
+ 
   }
   
   .lists {
-    margin-bottom: 1.5rem;
-    flex: 1 1 0%;
-    color: rgba(156, 163, 175, 1);
+    @apply mb-6 flex-1 text-[rgba(156,163,175,1)]
   }
   
   .lists .list {
-    margin-bottom: 0.5rem;
-    display: flex;
-    margin-left: 0.5rem
+    @apply mb-2 flex ml-2
   }
   
   .lists .list svg {
-    height: 1.5rem;
-    width: 1.5rem;
-    flex-shrink: 0;
-    margin-right: 0.5rem;
-    color: rgba(167, 139, 250, 1);
+    @apply h-6 w-6 flex-shrink-0 mr-2 text-[rgba(167,139,250,1)]
   }
   
   .action {
-    border: none;
-    outline: none;
-    display: inline-block;
-    border-radius: 0.25rem;
-    background-color: rgba(167, 139, 250, 1);
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-    text-align: center;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    color: rgba(17, 24, 39, 1);
+    @apply border-none outline-none inline-block rounded-md px-5 py-3 text-center font-semibold tracking-wider text-[rgba(17,24,39,1)] bg-[rgba(167,139,250,1)]
   }

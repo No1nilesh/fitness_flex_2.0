@@ -15,11 +15,27 @@ const userSchema = new Schema({
         type : String,
         required : [true, "Password must be required"],
     },
+  
     role: {
         type: String,
         enum: ["user", "trainer", "admin"],
         default: "user",
       },
+
+    isActiveMember : {
+        type : Boolean,
+        default : false
+    },
+    stripeCustomerId: {
+        type: String,
+        unique : true,
+        default: "" // Set a default value
+    },
+    subscriptionId : {
+        type : String,
+        unique : true,
+        default: "" // Set a default value
+    }
 },{
     timestamps : true
 })

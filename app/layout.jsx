@@ -10,14 +10,17 @@ export const metadata = {
 
 export default function RootLayout({children}){
     return(
-        <html lang="en" className="h-full w-full">
+
+        <html lang="en" className="h-full w-full font-inter">
         <SessionProviderComponent>
     
-        <body className="bg_color text-white h-full w-full">
+        <body className=" bg-[#eff2f5] dark:bg_color text-black h-full w-full">
             <Navbar/>
                 {children}
         </body>
         </SessionProviderComponent>
         </html>
+        
+    
     )
 }

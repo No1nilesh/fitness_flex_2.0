@@ -7,10 +7,8 @@ import { useRouter, usePathname } from "next/navigation";
 import { BiSolidDashboard } from "react-icons/bi";
 import { CgGym } from "react-icons/cg";
 import { FaRupeeSign } from "react-icons/fa";
-import { MdCardMembership } from "react-icons/md";
-import { FaUsers } from "react-icons/fa";
+import { BiTask } from "react-icons/bi";
 import { LuAlignLeft } from "react-icons/lu";
-import { TbLogout2 } from "react-icons/tb";
 
 const Sidebar = () => {
   //session
@@ -25,15 +23,9 @@ const Sidebar = () => {
 
   // nav links options
   const menu = [
-    { name: "Dashboard", href: "/admin/dashboard", icon: BiSolidDashboard },
-    { name: "Trainers", href: "/admin/trainer", icon: CgGym },
-    { name: "Earnings", href: "/admin/earnings", icon: FaRupeeSign },
-    {
-      name: "MemberShips Plans",
-      href: "/admin/membership_plans",
-      icon: MdCardMembership,
-    },
-    { name: "Users", href: "/admin/users", icon: FaUsers },
+    { name: "Dashboard", href: "/member", icon: BiSolidDashboard },
+    { name: "Workouts", href: "/member/workouts", icon: CgGym },
+    { name: "Diet Plans", href: "/member/diet_plans", icon: BiTask },
   ];
 
   const [showSidebar, setShowSidebar] = useState(false);
@@ -52,7 +44,7 @@ const Sidebar = () => {
       {/* Sidebar */}
       <aside
         className={
-          showSidebar ? " translate-x-0" : "-translate-x-full" + " aside"
+          showSidebar ? "aside translate-x-0" : "aside -translate-x-full"
         }
         aria-label="Sidebar"
       >
@@ -98,8 +90,8 @@ const Sidebar = () => {
             );
           })}
         </ul>
-        <button className="bottom-2 absolute flex justify-center items-center gap-2" onClick={handleSignOut}>
-      <span className=" transition-all hover:text-purple-800">Sign Out</span><TbLogout2 className="text-purple-800 text-lg transition-all hover:text-xl"/>
+        <button className="bottom-2 absolute" onClick={handleSignOut}>
+          Signout
         </button>
       </aside>
     </>

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
     const pathname = usePathname();
 return(
     <form onSubmit={handleSubmit} autoComplete="off" className="flex flex-col gap-2">
-    <div className="small_head_text text-white text-center">{headerLabel}</div>
+    <div className="small_head_text  text-center">{headerLabel}</div>
 
     {pathname==="/signup" ?    <label> Name 
        <input type="text" className="form_input"

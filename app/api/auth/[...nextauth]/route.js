@@ -7,18 +7,20 @@ import GoogleProvider from "next-auth/providers/google"
 import GithubProvider from "next-auth/providers/github"
 import { MongoDBAdapter } from "@auth/mongodb-adapter"
 import clientPromise from "../lib/mongodb"
+import Stripe from "stripe";
 
 // Random Password generater to fill the empty options for Signin with Google ad Github Provider.
-const generateRandomPassword=(length = 10)=> {
+const generateRandomPassword=async(length = 10)=> {
   const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let password = "";
   for (let i = 0; i < length; ++i) {
       const randomIndex = Math.floor(Math.random() * charset.length);
       password += charset[randomIndex];
   }
-  const hashedpassword = bcrypt.hash(password, 10)
+  const hashedpassword = await bcrypt.hash(password, 10)
   return hashedpassword;
 }
+
 
 
 //login function to compare and return user
@@ -37,7 +39,7 @@ try {
 }
 
 export const authOptions = {  
-  adapter: MongoDBAdapter(clientPromise),
+  adapter: MongoDBAdapter(clientPromise, {databaseName : 'fitness_flex'}),
   pages : {
     signIn : "/login"
   },
@@ -66,7 +68,11 @@ export const authOptions = {
           name : profile.name,
           email : profile.email,
           image : profile.picture,
-          role : profile.role ?? 'user'
+          password : await generateRandomPassword(),
+          role : profile.role ?? 'user',
+          stripeCustomerId : profile.stripeCustomerId ?? '',
+          subscriptionId : profile.subscriptionId ?? '',
+          isActiveMember : profile.isActiveMember ?? false
         }
       }
     }),
@@ -76,30 +82,68 @@ export const authOptions = {
       clientSecret: process.env.GITHUB_SECRET,
       profile(profile){
         return {
-          ...profile,
-          role : profile.role ?? "user"
+          id : profile.id,
+          name : profile.name,
+          email : profile.email,
+          image : profile.picture,
+          stripeCustomerId : profile.stripeCustomerId ?? '',
+          subscriptionId : profile.subscriptionId ?? '',
+          role : profile.role ?? 'user',
+          isActiveMember : profile.isActiveMember ?? false
         }
       }
     }),
     
   ],
-
+  
   secret: process.env.NEXTAUTH_SECRET,
+
+  events : {
+    createUser : async({user})=>{
+      const stripe = new Stripe(process.env.STRIPE_SECRET);
+      const customer = await stripe.customers.create({
+        name : user.name,
+        email : user.email
+      })
+
+      const updateUser = {
+        id : user.id,
+        stripeCustomerId : customer.id
+      }
+      const updatedUserData = await authOptions.adapter.updateUser(updateUser)
+      console.log("updateduser", updatedUserData);
+    }
+  },
   session: {
     strategy: "jwt",
   },
 
   callbacks : {
 
-    async jwt({token , user}){
+    async jwt({token , user, trigger}){
       if(user){
-        console.log(user.role)
+        token.id = user.id,
         token.name = user.name,
         token.email = user.email,
-        token.id = user.id
-        token.role = user.role
+        token.role = user.role,
+        token.stripeCustomerId = user.stripeCustomerId,
+        token.subscriptionId = user.subscriptionId,
+        token.isActiveMember = user.isActiveMember
       }
-      console.log("this is token", token)
+
+      // to update changes in jwt token when some thing change in database. 
+        if (trigger === 'update') {
+          const refreshedUser = await authOptions.adapter.getUser(token.id);
+          console.log(refreshedUser);
+          token.id = refreshedUser.id,
+          token.name = refreshedUser.name,
+          token.email = refreshedUser.email,
+          token.role = refreshedUser.role,
+          token.stripeCustomerId = refreshedUser.stripeCustomerId,
+          token.subscriptionId = refreshedUser.subscriptionId,
+          token.isActiveMember = refreshedUser.isActiveMember
+      }
+  
       return token
     },
 
@@ -107,13 +151,31 @@ export const authOptions = {
       if(token){
         session.name = token.name,
         session.email = token.email,
-        session.id = token.id
-        session.user.role = token.role
+        session.id = token.id,
+        session.user.id = token.id,
+        session.user.role = token.role,
+        session.user.stripeCustomerId = token.stripeCustomerId,
+        session.user.subscriptionId = token.subscriptionId,
+        session.user.isActiveMember = token.isActiveMember
       }
     
     console.log("this is session", session)
       return session;
     },
+    // async session({session, user}){
+      
+    //     session.name = user.name,
+    //     session.email = user.email,
+    //     session.id = user.id,
+    //     session.role = user.role,
+    //     session.stripeCustomerId = user.stripeCustomerId,
+    //     session.subscriptionId = user.subscriptionId,
+    //     session.isActiveMember = user.isActiveMember
+  
+    
+    // console.log("this is session", session)
+    //   return session;
+    // },
 
 
     async signIn({user, account }){
@@ -122,27 +184,9 @@ export const authOptions = {
       return true
      }
 
-     //checking for OAuth provider
      if(account?.provider == "google" || account?.provider == "github"){
-      try {
-        connectToDb();
-        console.log("connected to db successfully");
-        const userExists = await User.findOne({email : user.email}).then(console.log("check comlepeted"));
-        if(!userExists){
-          await User.create({
-            email : user.email,
-            name : user.name,
-            image : user.picture,
-            password : await generateRandomPassword()
-          })
-        }
-        return true
-      } catch (error) {
-        console.log("Error checking if user exists: ", error.message);
-        return false
-      }
-     }
-     
+      return true;
+     }     
     }
   }
 }
