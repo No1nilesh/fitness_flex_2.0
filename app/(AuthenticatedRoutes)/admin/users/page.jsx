@@ -1,6 +1,7 @@
 "use client";
-import Usertable from "@components/AdminComponents/UserTable";
 import { useEffect, useState } from "react";
+import { DataTable } from "../../../../components/UiComponents/data-table";
+import { columns } from "./columns";
 
 const Users = () => {
   const [userData, setUserdata] = useState([]);
@@ -26,100 +27,101 @@ const Users = () => {
   const activeUsers = userData?.filter((user) => user.isActiveMember === true);
 
   // Pagination Logic
-  const indexOfLastUser = currentPage * usersPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  // const indexOfLastUser = currentPage * usersPerPage;
+  // const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = isActiveUsers ? activeUserData : userData;
-  const currentUsersToShow = currentUsers.slice(indexOfFirstUser, indexOfLastUser);
+  // const currentUsersToShow = currentUsers.slice(
+  //   indexOfFirstUser,
+  //   indexOfLastUser
+  // );
 
   // Change page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  // const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const handleDeleteSelected = async (selectedIds) => {
+    console.log(selectedIds);
+    const hasConfirmed = confirm("Are you sure ?");
+    if (hasConfirmed) {
+      try {
+        await Promise.all(
+          selectedIds.map(async (id) => {
+            const res = await fetch(`/api/admin/users/${id}`, {
+              method: "DELETE",
+            });
+
+            if (!res.ok) {
+              console.error(`failed to delete row with id: ${id}`);
+            }
+
+            const updatedUserData = userData.filter(
+              (user) => !selectedIds.includes(user._id)
+            );
+            setUserdata(updatedUserData);
+          })
+        );
+      } catch (error) {
+        console.error("Error occurred while deleting rows:", error);
+      }
+    }
+  };
 
   return (
-    <div className="w-full h-full flex-center flex-col gap-2 text-black sm:flex-row">
-      <div className="bg-[#ffffff] rounded-md min-h-full w-full drop-shadow-md overflow-auto">
-
-      {/* Active Button */}
-          <h2 className="font-normal text-gray-700 flex items-center gap-2 justify-end px-2 pt-4">
-          <span className='font-semibold'>Active</span> <label className="switch">
-            <input
-            checked={isActiveUsers}
-            onChange={handleActiveUsers}
-             type="checkbox" />
-            <span className="slider"></span>
-          </label> </h2>
-
-          {/* Table  */}
-        <table className="w-full text-sm text-left rtl:text-right">
-          <thead className="text-xs text-gray-700 uppercase dark:text-gray-400">
-            <tr>
-              <th scope="col" className="p-4"></th>
-              <th scope="col" className="px-6 py-3">
-                Name
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Role
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <UserdataTableList data={currentUsersToShow} />
-        </table>
-        <Pagination
-          usersPerPage={usersPerPage}
-          totalUsers={currentUsers.length}
-          currentPage={currentPage}
-          paginate={paginate}
+    <div className="flex flex-col sm:flex-row justify-center  gap-2 max-w-full min-h-full h-full  rounded-md">
+      <div className="w-screen md:w-full md:h-full px-2 table-container">
+        <DataTable
+          columns={columns(handleDeleteSelected)}
+          data={currentUsers}
         />
       </div>
-
-      <div className="h-full bg-[#ffffff] rounded-md w-64 drop-shadow-md">
-        <div className="text-center py-2 font-bold text-xl text-gray-400">
-          New User
-        </div>
+      {/* <span className="font-semibold">Active</span>
+      <label className="switch absolute">
+        <input
+          checked={isActiveUsers}
+          onChange={handleActiveUsers}
+          type="checkbox"
+        />
+        <span className="slider"></span>
+      </label> */}
+      <div className="h-full w-1/3   bg-primary-foreground rounded-md text-primary py-2 ">
+        <h2 className="text-2xl font-semibold text-center">New Users</h2>
       </div>
+      {/* <Pagination
+        usersPerPage={usersPerPage}
+        totalUsers={currentUsers.length}
+        currentPage={currentPage}
+        paginate={paginate}
+      /> */}
     </div>
   );
 };
 
-const UserdataTableList = ({ data }) => {
-  return (
-    <tbody>
-      {data?.map((tabledata) => {
-        return <Usertable key={tabledata._id} tabledata={tabledata} />;
-      })}
-    </tbody>
-  );
-};
+// const Pagination = ({ usersPerPage, totalUsers, paginate, currentPage }) => {
+//   const pageNumbers = [];
 
-// Pagination
-const Pagination = ({ usersPerPage, totalUsers, paginate, currentPage }) => {
-  const pageNumbers = [];
+//   for (let i = 1; i <= Math.ceil(totalUsers / usersPerPage); i++) {
+//     pageNumbers.push(i);
+//   }
 
-  for (let i = 1; i <= Math.ceil(totalUsers / usersPerPage); i++) {
-    pageNumbers.push(i);
-  }
-
-  return (
-    <nav className="flex justify-center mt-4 fixed w-full bottom-2">
-      <ul className="flex list-none">
-        {pageNumbers.map((number) => (
-          <li key={number} className="mx-1">
-            <button
-              onClick={() => paginate(number)}
-              className={`px-3 py-1 rounded-md hover:bg-gray-300 ${
-                currentPage === number ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              {number}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
-};
-
+//   return (
+//     <nav className="flex justify-center mt-4 fixed bottom-2 mr-64 ">
+//       <ul className="flex list-none">
+//         {pageNumbers.map((number) => (
+//           <li key={number} className="mx-1">
+//             <button
+//               onClick={() => paginate(number)}
+//               className={`px-3 py-1 rounded-md hover:bg-gray-300 ${
+//                 currentPage === number
+//                   ? "bg-blue-500 text-white"
+//                   : "bg-gray-200 text-gray-700"
+//               }`}
+//             >
+//               {number}
+//             </button>
+//           </li>
+//         ))}
+//       </ul>
+//     </nav>
+//   );
+// };
 
 export default Users;

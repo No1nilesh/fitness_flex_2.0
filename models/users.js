@@ -1,45 +1,48 @@
-import mongoose, {Schema , model , models} from "mongoose";
+import mongoose, { Schema, model, models } from "mongoose";
 
-const userSchema = new Schema({
-    name : {
-        type : String ,
-        required : [true , "Must provide a name"]
+const userSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Must provide a name"],
     },
-    email : {
-        type : String,
-        required : [true, "Email must be Required."],
-        unique : [true, "Email must be unique"]
+    email: {
+      type: String,
+      required: [true, "Email must be Required."],
+      unique: [true, "Email must be unique"],
     },
-    
-    password : {
-        type : String,
-        required : [true, "Password must be required"],
+
+    password: {
+      type: String,
+      required: [true, "Password must be required"],
     },
-  
+
     role: {
-        type: String,
-        enum: ["user", "trainer", "admin"],
-        default: "user",
-      },
-
-    isActiveMember : {
-        type : Boolean,
-        default : false
+      type: String,
+      enum: ["user", "trainer", "admin"],
+      default: "user",
     },
+
     stripeCustomerId: {
-        type: String,
-        unique : true,
-        default: "" // Set a default value
+      type: String,
+      default: "", // Set a default value
+      index: true,
+      sparse: true,
     },
-    subscriptionId : {
-        type : String,
-        unique : true,
-        default: "" // Set a default value
-    }
-},{
-    timestamps : true
-})
 
+    isActiveMember: {
+      type: Boolean,
+      default: false,
+    },
+    isNewUser: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const User = models.User || model("User", userSchema);
 

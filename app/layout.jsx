@@ -1,26 +1,29 @@
-
-import Navbar from "@components/Navbar";
+import Navbar from "@components/UiComponents/Navbar";
 import SessionProviderComponent from "@components/SessionProviderComponent";
 import "@styles/global.css";
-
+import { Toaster } from "@/components/ui/toaster";
+import { Inter as FontSans } from "next/font/google";
+import { cn } from "@lib/utils";
 export const metadata = {
-    title: 'Fitness Flex',
-    description: 'Gym Management Web App!',
-  }
+  title: "Fitness Flex",
+  description: "Gym Management Web App!",
+};
 
-export default function RootLayout({children}){
-    return(
+// const fontSans = FontSans({
+//   subsets: ["latin"],
+//   variable: "--font-sans",
+// });
 
-        <html lang="en" className="h-full w-full font-inter">
-        <SessionProviderComponent>
-    
-        <body className=" bg-[#eff2f5] dark:bg_color text-black h-full w-full">
-            <Navbar/>
-                {children}
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" className="font-inter">
+      <SessionProviderComponent>
+        <body className={cn("h-screen w-full overflow-auto md:h-full")}>
+          <Navbar />
+          {children}
+          <Toaster />
         </body>
-        </SessionProviderComponent>
-        </html>
-        
-    
-    )
+      </SessionProviderComponent>
+    </html>
+  );
 }

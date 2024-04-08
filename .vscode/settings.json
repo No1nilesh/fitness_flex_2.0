@@ -1,0 +1,9 @@
+{
+  "editor.cursorSmoothCaretAnimation": "explicit",
+  "editor.cursorWidth": 3,
+  "editor.fontSize": 14,
+  "editor.cursorBlinking": "expand",
+  "editor.cursorStyle": "line",
+  "editor.wrappingStrategy": "simple",
+  "cSpell.words": ["idempotency", "Loged", "zustand"]
+}

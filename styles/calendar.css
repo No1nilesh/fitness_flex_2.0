@@ -1,0 +1,68 @@
+.rbc-header {
+  @apply text-[#333333] bg-[#6699cc] text-sm flex items-center justify-center h-9;
+}
+
+.rbc-allday-cell {
+  @apply hidden;
+}
+
+.rbc-time-header-cell .rbc-today {
+  @apply bg-green-400;
+}
+
+.rbc-time-slot {
+  @apply text-[#333333] z-10;
+}
+
+.rbc-time-slot:not(.rbc-today .rbc-time-slot) {
+  @apply bg-[#6699cc];
+}
+.rbc-day-slot .rbc-time-slot,
+.rbc-day-slot .rbc-event {
+  @apply border-none;
+}
+
+.rbc-time-content > * + * > * {
+  @apply border-l border-l-[#e0e8f0];
+}
+
+.rbc-event,
+.rbc-background-event {
+  @apply z-20 p-0 border-none outline-none;
+}
+
+.rbc-event-label {
+  @apply hidden;
+}
+
+.rbc-event-label {
+  @apply hidden;
+}
+
+.rbc-month-row + .rbc-month-row {
+  @apply border-[#e0e8f0];
+}
+
+.rbc-header + .rbc-header {
+  @apply border-l border-l-[#e0e8f0];
+}
+.rbc-time-content {
+  @apply border-none;
+}
+.rbc-today {
+  @apply bg-[#6699ccad] text-primary-foreground;
+}
+
+.rbc-off-range-bg {
+  @apply bg-[#f1e7f7];
+}
+
+.rbc-date-cell button {
+  @apply text-[#333333];
+}
+
+.rbc-addons-dnd .rbc-addons-dnd-resize-ew-anchor {
+  position: absolute;
+  top: 10px;
+  bottom: 0;
+}

@@ -1,4 +1,4 @@
-import Loader from "@components/Loader";
+import Loader from "@components/UiComponents/Loader";
 
 const loading = () => {
   return <Loader/>

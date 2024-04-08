@@ -38,21 +38,21 @@ const Sidebar = () => {
 
   const [showSidebar, setShowSidebar] = useState(false);
 
-  const handleLinkClick=()=>{
+  const handleLinkClick = () => {
     setShowSidebar(false);
-  }
+  };
 
   return (
     <>
       <LuAlignLeft
         onClick={() => setShowSidebar((prev) => !prev)}
-        className="sm:hidden block absolute z-50 top-2 left-2 text-2xl cursor-pointer opacity-80"
+        className="xl:hidden block fixed z-50 top-4 left-2 text-2xl cursor-pointer opacity-80"
       />
 
       {/* Sidebar */}
       <aside
         className={
-          showSidebar ? " translate-x-0" : "-translate-x-full" + " aside"
+          showSidebar ? "aside translate-x-0" : "aside -translate-x-full"
         }
         aria-label="Sidebar"
       >
@@ -98,8 +98,14 @@ const Sidebar = () => {
             );
           })}
         </ul>
-        <button className="bottom-2 absolute flex justify-center items-center gap-2" onClick={handleSignOut}>
-      <span className=" transition-all hover:text-purple-800">Sign Out</span><TbLogout2 className="text-purple-800 text-lg transition-all hover:text-xl"/>
+        <button
+          className="bottom-2 absolute flex justify-center items-center gap-2"
+          onClick={handleSignOut}
+        >
+          <span className=" transition-all hover:text-purple-800">
+            Sign Out
+          </span>
+          <TbLogout2 className="text-purple-800 text-lg transition-all hover:text-xl" />
         </button>
       </aside>
     </>

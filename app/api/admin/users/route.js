@@ -19,14 +19,14 @@ export async function GET(req) {
 
   try {
     await connectToDb();
-    const exists = await User.find({ role: "user" });
+    const exists = await User.find({ role: "user" }).select("-password");
     if (!exists)
       return NextResponse.json({ message: "No user Found" }, { status: 404 });
 
     return NextResponse.json(exists, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { message: "Error Occured While loading users" },
+      { message: "Error Occurred While loading users" },
       { status: 500 }
     );
   }

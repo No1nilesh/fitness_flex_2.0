@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { IoMdNotifications } from "react-icons/io";
 import { useSession } from "next-auth/react";
 import { MdHome } from "react-icons/md";
@@ -7,19 +7,21 @@ import Image from "next/image";
 
 const DashoardNav = () => {
   const { data: session } = useSession();
-  const pathname  = usePathname();
+  const pathname = usePathname();
 
-    const startwithCap=(word)=>{
-      const first_word =   word.slice(0, 1);
-        const last_words = word.slice(1, word.length);
-        return first_word.toUpperCase() + last_words;
-    }
+  const startwithCap = (word) => {
+    const first_word = word.slice(0, 1);
+    const last_words = word.slice(1, word.length);
+    return first_word.toUpperCase() + last_words;
+  };
 
   return (
-    <nav className="flex justify-between fixed z-50 top-0 py-3" style={{ width: 'calc(100% - 18rem)' }}>
-    {/* Path indicator */}
-    <span className="flex items-center text-gray-500"><MdHome className="text-xl"/> / {startwithCap(pathname.slice(7, pathname.length))} </span>
-
+    <nav className="hidden xl:flex  justify-between  z-40 fixed top-2 w-[calc(100%_-_18.5rem)]">
+      {/* Path indicator */}
+      <span className="flex items-center text-gray-500">
+        <MdHome className="text-xl" /> /{" "}
+        {startwithCap(pathname.slice(7, pathname.length))}{" "}
+      </span>
 
       <ul className="flex gap-2 items-center justify-end">
         <li>

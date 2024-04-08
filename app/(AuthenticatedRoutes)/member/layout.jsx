@@ -1,11 +1,12 @@
-import Sidebar from "@components/member/Sidebar";
+import Sidebar from "@components/MemberComponents/Sidebar";
 
-
-export default function Memberlayout({ children }) {
-  return <>
-  <Sidebar/>
-  <main className="flex-grow sm:ml-64 px-4 mr-4 h-full">
-      {children}
-      </main>
-  </>;
+export default function MemberLayout({ children }) {
+  return (
+    <>
+      <div className="w-full h-full bg-[#eff2f5]   flex ">
+        <Sidebar />
+        <main className="flex-grow xl:ml-64">{children}</main>
+      </div>
+    </>
+  );
 }

@@ -1,16 +1,16 @@
-'use client'
+"use client";
 import { useEffect, useState } from "react";
 import "@styles/home.css";
-import Loader from "@components/Loader";
-import Banner from "@components/member/Banner";
-import MembershipCard from "@components/member/MembershipCard";
+import Loader from "@components/UiComponents/Loader";
+import Banner from "@components/MemberComponents/Banner";
+import MembershipCard from "@components/MemberComponents/MembershipCard";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 export default function Home() {
   const router = useRouter();
   const { data: session, status: sessionStatus } = useSession();
-  const [memplans, setMemplans] = useState([]);
+  const [memPlans, setMemPlans] = useState([]);
 
   useEffect(() => {
     if (sessionStatus === "authenticated") {
@@ -26,37 +26,15 @@ export default function Home() {
     }
   }, [sessionStatus, router]);
 
-
-  
-  useEffect(() => {
-    const fetchMembershipPlans = async () => {
-      try {
-        const res = await fetch("/api/membership_plans");
-        const data = await res.json();
-        setMemplans(data);
-      } catch (error) {
-        console.error("Error fetching membership plans:", error);
-      } 
-    };
-
-    fetchMembershipPlans();
-  }, []);
-
-  if (sessionStatus === "loading") {
+  if (session && sessionStatus === "loading") {
     return <Loader />;
   }
 
   return (
-    <>
+    sessionStatus !== "authenticated" && (
       <div className=" container mx-auto px-4 py-8">
         <Banner />
-
-        <div className="flex justify-center gap-20 mt-10">
-          {memplans.map((plan) => (
-            <MembershipCard key={plan._id} plan={plan} />
-          ))}
-        </div>
       </div>
-    </>
+    )
   );
 }
