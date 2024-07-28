@@ -10,8 +10,6 @@ const io = require("socket.io")(3001, {
 
 const Redis = require("ioredis");
 const redis = new Redis();
-const pub = new Redis();
-const sub = new Redis();
 
 const users = {}; //socketId of user who connects tp localhost:3001
 io.on("connection", async (socket) => {
@@ -110,20 +108,6 @@ const mediaCodecs = [
     ],
   },
 ];
-
-sub.subscribe("MESSAGES");
-
-// Handle messages from Redis
-sub.on("message", (channel, message) => {
-  if (channel === "MESSAGES") {
-    const parsedMessage = JSON.parse(message);
-    const { roomName, message: msgContent, email } = parsedMessage;
-    // console.log(`Received message: ${msgContent} for room: ${roomName}`);
-    msConnection
-      .to(roomName)
-      .emit("on:message", { message: msgContent, email });
-  }
-});
 
 msConnection.on("connection", async (socket) => {
   console.log(`Peer connected: ${socket.id}`);
@@ -240,9 +224,10 @@ msConnection.on("connection", async (socket) => {
     callback({ rtpCapabilities });
   });
 
-  socket.on("send:message", async ({ message, email, roomName }) => {
-    console.log(message, email, roomName);
-    await pub.publish(`MESSAGES`, JSON.stringify({ message, email, roomName }));
+  socket.on("send:message", async ({ message, email, roomName, socketId }) => {
+    console.log(message, email, roomName, socketId);
+    await redis.rpush(`${roomName}`, JSON.stringify({ from: email, message }));
+    msConnection.to(roomName).emit("on:message", { from: email, message });
   });
 
   socket.on("user-toggle-audio", (myVideoId, roomName, action) => {

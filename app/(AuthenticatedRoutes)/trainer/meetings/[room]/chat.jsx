@@ -12,48 +12,49 @@ const Chat = ({ socket, room }) => {
   const [msgInput, setMsgInput] = useState("");
   const lastMessageRef = useRef(null);
 
-  const OnMessage = () => {
+  const OnMessage = useCallback(() => {
     if (msgInput.trim() === "") return;
     socket.emit("send:message", {
       message: msgInput,
       email: session?.user.email,
       roomName: room,
+      socketId: socket.id,
     });
     setMsgInput("");
-  };
+  }, [msgInput, session?.user.email, room, socket]);
 
   const handleMessage = useCallback((data) => {
     setMessages((prevMessages) => [...prevMessages, data]);
   }, []);
 
   useEffect(() => {
-    if (!socket) return;
-    socket.on("on:message", handleMessage);
-
-    return () => {
-      socket.off("on:message", handleMessage);
-    };
-  }, [socket]);
-
-  useEffect(() => {
-    lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await axios.get(`/api/redis/get?key=user_message:${room}`);
-        const data = res.data.value ? JSON.parse(res.data.value) : [];
+        const res = await axios.get(`/api/redis/chat?key=${room}`);
+        const data = res.data.value || [];
 
-        if (data && Array.isArray(data)) {
-          setMessages(data);
-        }
+        const parsedMessages = data.map((element) => JSON.parse(element));
+        setMessages(parsedMessages);
       } catch (error) {
         console.error("Failed to fetch messages:", error);
       }
     };
-    fetchMessages();
-  }, []);
+
+    if (socket) {
+      socket.on("on:message", handleMessage);
+      fetchMessages();
+    }
+
+    return () => {
+      if (socket) {
+        socket.off("on:message", handleMessage);
+      }
+    };
+  }, [socket, handleMessage, room]);
+
+  useEffect(() => {
+    lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   return (
     <div className="px-2 h-[50vh] md:h-[75vh]">
@@ -63,12 +64,12 @@ const Chat = ({ socket, room }) => {
             <div
               key={index}
               className={`rounded-md my-2 w-fit px-2 py-1 ${
-                msg.email === session?.user.email
+                msg.from === session?.user.email
                   ? "ml-auto bg-purple-400 text-white"
                   : "bg-blue-100"
               }`}
             >
-              <div className="text-xs text-gray-500">{msg.email}</div>
+              <div className="text-xs text-gray-500">{msg.from}</div>
               {msg.message}
             </div>
           ))}
