@@ -3,17 +3,23 @@ import axios from "axios";
 
 const useCalendarStore = create((set) => ({
   events: [],
-  success: null,
-  message: null,
   fetchEvents: async () => {
-    const response = await axios.get("/api/trainer/schedule"); // Replace with your API endpoint
-    set({ events: response.data.schedule });
+    try {
+      const response = await axios.get("/api/trainer/schedule"); // Replace with your API endpoint
+      set({ events: response.data.schedule });
+    } catch (error) {
+      console.log(error);
+    }
   },
 
   addEvent: async (event) => {
     const response = await axios.post("/api/trainer/schedule", event);
-    set((state) => ({ events: [...state.events, response.data.schedule] }));
-    set((state) => ({ success: response.data.success }));
+    set((state) => ({
+      events: [...state.events, response.data.schedule],
+    }));
+
+    const addedRes = response.data;
+    return addedRes;
   },
 
   updateEvent: async (updatedEvent) => {
@@ -27,7 +33,7 @@ const useCalendarStore = create((set) => ({
           event._id === updatedEvent._id ? response.data.updatedSchedule : event
         ),
       }));
-      set((state) => ({ success: response.data.success }));
+      return response.data;
     } catch (error) {
       console.log(error);
     }
@@ -39,8 +45,7 @@ const useCalendarStore = create((set) => ({
       set((state) => ({
         events: state.events.filter((event) => event._id !== eventId),
       }));
-      set((state) => ({ success: response.data.success }));
-      set((state) => ({ message: response.data.message }));
+      return response.data;
     } catch (error) {
       console.log(error);
     }

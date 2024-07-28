@@ -31,9 +31,10 @@ const Sidebar = () => {
 
   // nav links options
   const menu = [
-    { name: "Dashboard", href: "/trainer", icon: BiSolidDashboard },
+    { name: "Dashboard", href: "/trainer/dashboard", icon: BiSolidDashboard },
     { name: "Workouts", href: "/trainer/workouts", icon: CgGym },
     { name: "Diet Plans", href: "/trainer/diet_plans", icon: BiTask },
+    { name: "Meetings", href: "/trainer/meetings", icon: BiTask },
   ];
 
   const [showSidebar, setShowSidebar] = useState(false);
@@ -146,7 +147,7 @@ const Sidebar = () => {
         {/* dropdown menu */}
 
         <DropdownMenu>
-          <DropdownMenuTrigger className="border-none">
+          <DropdownMenuTrigger className="border-none outline-none hover:outline-none">
             <div className="rounded-md text-center text-lg flex items-center gap-3 mx-2">
               <Image
                 src={

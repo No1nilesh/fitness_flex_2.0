@@ -131,7 +131,8 @@ export const authOptions = {
           (token.isActiveMember = user.isActiveMember);
         if (user.role === "trainer") {
           const trainer = await Trainer.findOne({ userId: user.id });
-          token.verified = await trainer.verified;
+          token.trainerId = trainer._id;
+          token.verified = trainer.verified;
         }
       }
 
@@ -147,7 +148,8 @@ export const authOptions = {
           (token.isActiveMember = refreshedUser.isActiveMember);
         if (refreshedUser.role === "trainer") {
           const trainer = await Trainer.findOne({ userId: token.id });
-          token.verified = await trainer.verified;
+          token.trainerId = trainer._id;
+          token.verified = trainer.verified;
         }
       }
 
@@ -164,7 +166,10 @@ export const authOptions = {
           (session.user.isNewUser = token.isNewUser),
           (session.user.stripeCustomerId = token.stripeCustomerId),
           (session.user.isActiveMember = token.isActiveMember);
-        if (token.role === "trainer") session.user.verified = token.verified;
+        if (token.role === "trainer") {
+          (session.user.trainerId = token.trainerId),
+            (session.user.verified = token.verified);
+        }
       }
 
       // console.log("this is session", session)

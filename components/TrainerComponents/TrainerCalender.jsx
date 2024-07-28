@@ -59,6 +59,8 @@ const TrainerCalender = () => {
     return events.map((event) => ({
       _id: event._id,
       title: event.title,
+      meeting: event.meeting,
+      roomId: event.roomId,
       start: moment.utc(event.start).toDate(),
       end: moment.utc(event.end).toDate(),
       task_done: event.task_done,
@@ -89,6 +91,7 @@ const TrainerCalender = () => {
       onOpen();
       let title = "";
       let id;
+      let meeting = false;
       // set from data to create event
 
       /**
@@ -99,7 +102,7 @@ const TrainerCalender = () => {
        * @param action //create
        *
        */
-      setEventFormData(id, start, end, title, "create");
+      setEventFormData(id, start, end, title, "create", meeting);
     },
     [setEventFormData]
   );
@@ -122,7 +125,8 @@ const TrainerCalender = () => {
         event.start,
         event.end,
         event.title,
-        "update"
+        "update",
+        event.meeting
       );
     },
     [setEventFormData]
@@ -152,6 +156,8 @@ const TrainerCalender = () => {
       let updatedEvent = {
         _id: event._id,
         title: event.title,
+        meeting: event.meeting,
+        roomId: event.roomId,
         start,
         end,
       };
@@ -272,14 +278,15 @@ const TrainerCalender = () => {
 
 export default TrainerCalender;
 
-/** Event component */
-import { Card } from "@components/ui/card";
-
 const EventComponent = (event) => {
-  // console.log(event);
+  console.log(event);
   return (
-    <Card className="border-none bg-[#99b3d0] rounded-sm text-[#333333] font-medium h-full w-full">
+    <div
+      className={`border-none  rounded-sm text-[#333333] font-medium h-full w-full ${
+        event.event.meeting ? "bg-[#99b3d0]" : "bg-blue-300"
+      }`}
+    >
       <div className="py-1 text-center ">{event.title}</div>
-    </Card>
+    </div>
   );
 };

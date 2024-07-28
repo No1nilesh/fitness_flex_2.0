@@ -7,9 +7,10 @@ const eventFormDataStore = (set) => ({
   end: null,
   title: null,
   action: null,
+  meeting: null,
 
-  setEventFormData: (id, start, end, title, action) =>
-    set({ id, start, end, title, action }),
+  setEventFormData: (id, start, end, title, action, meeting) =>
+    set({ id, start, end, title, action, meeting }),
 });
 
 const useEventFormDataStore = create(

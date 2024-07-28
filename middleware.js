@@ -4,6 +4,23 @@ import { NextResponse } from "next/server";
 export default withAuth(
   // `withAuth` augments your `Request` with the user's token.
   function middleware(req) {
+    // if (req.nextUrl.pathname.startsWith("/")) {
+    //   switch (req.nextauth.token?.role) {
+    //     case "admin":
+    //       NextResponse.rewrite(new URL("/admin/dashboard", req.url));
+    //       break;
+    //     case "user":
+    //       NextResponse.rewrite(new URL("/trainer/dashboard", req.url));
+    //       break;
+    //     case "trainer":
+    //       NextResponse.rewrite(new URL("/member/dashboard", req.url));
+    //       break;
+
+    //     default:
+    //       break;
+    //   }
+    // }
+
     if (
       req.nextUrl.pathname.startsWith("/admin") &&
       req.nextauth.token?.role !== "admin"

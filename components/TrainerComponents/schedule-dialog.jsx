@@ -1,4 +1,4 @@
-import CreateEventForm from "@components/UiComponents/create-event-form";
+import CreateEventForm from "@components/TrainerComponents/create-event-form";
 import { CustomDialog } from "@components/UiComponents/custom-dialog";
 
 const ScheduleDialog = () => {

@@ -35,10 +35,10 @@ const MembershipPlans = () => {
           durationUnit: data.durationUnit,
         }),
       });
-      const data = await response.json();
+      const plan = await response.json();
 
       // Update memPlan array with the new plan data
-      setMemPlan((prevMemPlan) => [...prevMemPlan, data]);
+      setMemPlan((prevMemPlan) => [...prevMemPlan, plan]);
     } catch (error) {
       console.log(error);
     } finally {

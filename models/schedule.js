@@ -6,6 +6,13 @@ const scheduleSchema = new Schema({
     ref: "Trainer",
     required: true,
   },
+  meeting: {
+    type: Boolean,
+    default: false,
+  },
+  roomId: {
+    type: String,
+  },
   start: {
     type: Date,
     required: true,

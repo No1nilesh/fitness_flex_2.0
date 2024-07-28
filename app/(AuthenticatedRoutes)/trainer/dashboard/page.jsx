@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import TabComponent from "@components/UiComponents/Tabs";
-import Students from "./Students";
-import Schedule from "./Schedule";
+import Students from "../Students";
+import Schedule from "../Schedule";
 const TrainerDashboard = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const { data: session, update, status: sessionStatus } = useSession();

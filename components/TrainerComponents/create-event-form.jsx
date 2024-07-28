@@ -1,6 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useMediaSoupSocket } from "@Hooks/useMediaSoupSocket";
 import moment from "moment";
 import { z } from "zod";
 import { formatDateForInput, parseDateTimeString } from "@utils/dateFormatter";
@@ -15,10 +16,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import useEventFormDataStore from "@ZustandStore/useEventFormDataStore";
-// import useEventStore from "@ZustandStore/useEventStore";
 import useCalendarStore from "@ZustandStore/useCalenderStore";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useDialog } from "@ZustandStore/useDialog";
+import { Switch } from "@components/ui/switch";
+import { useSession } from "next-auth/react";
 // form Schema
 
 const dateTimeFormatRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
@@ -36,6 +38,7 @@ const formSchema = z
       message:
         "Invalid dateTime format. It should be in the format YYYY-MM-DDTHH:MM.",
     }),
+    meeting: z.boolean(),
   })
   .refine(
     (data) => {
@@ -53,19 +56,16 @@ const formSchema = z
   );
 
 const CreateEventForm = () => {
-  const { id, start, end, title, action } = useEventFormDataStore();
+  const { id, start, end, title, action, meeting } = useEventFormDataStore();
   const scheduleId = id;
   const { onClose } = useDialog();
-
-  const { success, addEvent, updateEvent, deleteEvent, message } =
-    useCalendarStore((state) => ({
-      addEvent: state.addEvent,
-      updateEvent: state.updateEvent,
-      deleteEvent: state.deleteEvent,
-      message: state.message,
-      success: state.success,
-    }));
-  const { toast } = useToast();
+  const mediaSoupSocket = useMediaSoupSocket();
+  const { data: session } = useSession();
+  const { addEvent, updateEvent, deleteEvent } = useCalendarStore((state) => ({
+    addEvent: state.addEvent,
+    updateEvent: state.updateEvent,
+    deleteEvent: state.deleteEvent,
+  }));
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -73,6 +73,7 @@ const CreateEventForm = () => {
       title: title,
       start: formatDateForInput(start),
       end: formatDateForInput(end),
+      meeting: meeting,
     },
   });
 
@@ -82,12 +83,33 @@ const CreateEventForm = () => {
     try {
       const startDate = parseDateTimeString(value.start);
       const endDate = parseDateTimeString(value.end);
-      addEvent({ title: value.title, start: startDate, end: endDate });
-      success &&
-        toast({
-          variant: "primary",
-          title: "Schedule Added",
+      const res = await addEvent({
+        title: value.title,
+        start: startDate,
+        end: endDate,
+        meeting: value.meeting,
+      });
+
+      const { success, schedule } = res;
+
+      if (!success) return toast.error("Some Error Occurred");
+
+      if (schedule.meeting) {
+        mediaSoupSocket.emit("event:scheduled", {
+          email: session?.user.email,
+          roomName: schedule.roomId,
         });
+        toast.success("Event has been scheduled", {
+          description: schedule.roomId,
+          action: {
+            label: "Copy",
+            onClick: () => navigator.clipboard.writeText(schedule.roomId),
+          },
+        });
+      } else {
+        toast.success("schedule Created");
+      }
+
       onClose();
     } catch (error) {
       console.log(error);
@@ -99,16 +121,14 @@ const CreateEventForm = () => {
     const startDate = parseDateTimeString(value.start);
     const endDate = parseDateTimeString(value.end);
     try {
-      updateEvent({
+      const res = await updateEvent({
         _id: scheduleId,
         title: value.title,
         start: startDate,
         end: endDate,
+        meeting: value.meeting,
       });
-      success &&
-        toast({
-          title: "Schedule Updated",
-        });
+      res.success && toast.success("Schedule Updated");
       onClose();
     } catch (error) {
       console.log(error);
@@ -126,11 +146,9 @@ const CreateEventForm = () => {
   const handelDelete = async (e) => {
     e.preventDefault();
     try {
-      deleteEvent(scheduleId);
-      if (success) {
-        toast({
-          title: message,
-        });
+      const res = await deleteEvent(scheduleId);
+      if (res.success) {
+        toast.success("Schedule deleted Successfully");
       }
       onClose();
     } catch (error) {
@@ -141,6 +159,22 @@ const CreateEventForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="meeting"
+          render={({ field }) => (
+            <FormItem className={"flex items-center gap-2 justify-end"}>
+              <FormLabel>Meeting</FormLabel>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="title"
@@ -181,6 +215,7 @@ const CreateEventForm = () => {
             </FormItem>
           )}
         />
+
         <div className="flex justify-evenly">
           <Button type="submit">Submit</Button>
           {action === "update" && (

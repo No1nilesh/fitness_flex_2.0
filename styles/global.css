@@ -308,3 +308,7 @@
 .switch input:checked + .slider:before {
   transform: translateX(1.6em);
 }
+
+video {
+  object-fit: cover;
+}

@@ -5,5 +5,12 @@
   "editor.cursorBlinking": "expand",
   "editor.cursorStyle": "line",
   "editor.wrappingStrategy": "simple",
-  "cSpell.words": ["idempotency", "Loged", "zustand"]
+  "cSpell.words": [
+    "idempotency",
+    "Loged",
+    "lucide",
+    "mediasoup",
+    "videoproducer",
+    "zustand"
+  ]
 }

@@ -1,6 +1,5 @@
 import { authOptions } from "@app/api/auth/[...nextauth]/route";
 import Schedule from "@models/schedule";
-import Trainer from "@models/trainer";
 import { connectToDb } from "@utils/conntectToDb";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
@@ -18,10 +17,10 @@ export async function PATCH(req, { params }) {
     return new NextResponse(null, { status: 403 }); // User is authenticated but does not have the right permissions
   }
 
-  const { title, start, end, task_done } = await req.json();
+  const { title, start, end, task_done, meeting } = await req.json();
   const scheduleId = params.id;
+  connectToDb();
   try {
-    connectToDb();
     const schedule = await Schedule.findById(scheduleId);
     if (!schedule)
       return NextResponse.json(
@@ -32,6 +31,7 @@ export async function PATCH(req, { params }) {
     schedule.start = start;
     schedule.end = end;
     schedule.task_done = task_done;
+    schedule.meeting = meeting;
     const updatedSchedule = await schedule.save();
     return NextResponse.json(
       { success: true, updatedSchedule },

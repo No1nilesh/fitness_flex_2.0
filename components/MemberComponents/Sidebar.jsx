@@ -11,6 +11,7 @@ import {
   NotepadText,
   AlignLeft,
   LogOutIcon,
+  MonitorPlay,
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -26,10 +27,11 @@ const Sidebar = () => {
 
   // nav links options
   const menu = [
-    { name: "Dashboard", href: "/member", icon: LayoutDashboard },
+    { name: "Dashboard", href: "/member/dashboard", icon: LayoutDashboard },
     { name: "Workouts", href: "/member/workouts", icon: DumbbellIcon },
     { name: "Diet Plans", href: "/member/diet_plans", icon: NotepadText },
     { name: "Manage Plan", href: "/member/subscription", icon: CalendarCheck },
+    { name: "Live Classes", href: "/member/live_classes", icon: MonitorPlay },
   ];
 
   const [showSidebar, setShowSidebar] = useState(false);
@@ -76,7 +78,7 @@ const Sidebar = () => {
                   key={items.name}
                   href={items.href}
                   className={
-                    pathname === items.href
+                    pathname.includes(items.href)
                       ? "sidebar_links active"
                       : "sidebar_links"
                   }

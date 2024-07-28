@@ -4,6 +4,7 @@ import Trainer from "@models/trainer";
 import { connectToDb } from "@utils/conntectToDb";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+const { v4: uuidv4, v4 } = require("uuid");
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
@@ -17,9 +18,9 @@ export async function POST(req) {
   if (session.user.role !== "trainer") {
     return new NextResponse(null, { status: 403 }); // User is authenticated but does not have the right permissions
   }
-
-  const { title, start, end } = await req.json();
   await connectToDb();
+
+  const { title, start, end, meeting } = await req.json();
 
   try {
     const trainer = await Trainer.findOne({ userId: session?.user.id });
@@ -28,6 +29,8 @@ export async function POST(req) {
       title,
       start,
       end,
+      meeting,
+      roomId: meeting ? v4() : "",
     });
     return NextResponse.json({ success: true, schedule }, { status: 201 });
   } catch (error) {
