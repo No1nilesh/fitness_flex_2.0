@@ -6,9 +6,10 @@ async function handler(req, { params }) {
   const { action } = params;
 
   try {
+    const url = new URL(req.url);
+    const key = url.searchParams.get("key");
     if (action === "get") {
-      const url = new URL(req.url);
-      const key = url.searchParams.get("key");
+      console.log(key);
       const value = await redisClient.get(key);
       return NextResponse.json({ key, value }, { status: 200 });
     } else if (action === "set") {
@@ -18,6 +19,9 @@ async function handler(req, { params }) {
         { message: `Key ${key} set to ${value}` },
         { status: 200 }
       );
+    } else if (action === "chat") {
+      const value = await redisClient.lrange(key, 0, -1);
+      return NextResponse.json({ key, value }, { status: 200 });
     } else {
       return NextResponse.json({ message: "Invalid action" }, { status: 400 });
     }

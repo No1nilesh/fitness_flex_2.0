@@ -76,6 +76,7 @@ const LiveClass = () => {
         `/api/redis/get?key=live_meeting:${trainerEmail}`
       );
       const meetData = JSON.parse(res.data.value);
+      console.log(meetData);
       setLiveMeeting(meetData);
     };
     fetchLiveEventData();
